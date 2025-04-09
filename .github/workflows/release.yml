@@ -1,33 +1,33 @@
-name: Automated Release
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
+name: Release Automation 
+ 
+on: 
+  push: 
+    branches: 
+      - main 
+ 
+jobs: 
+  release: 
+    runs-on: ubuntu-latest 
+    steps: 
+      - name: Checkout code 
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-          
-      - name: Generate release version
-        id: version
-        run: echo "version=$(date +'v%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
-          
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.version.outputs.version }}
-          name: Release ${{ steps.version.outputs.version }}
+      - name: Set up Python 
+              uses: actions/setup-python@v4 
+              with: 
+                python-version: '3.9' 
+      
+      - name: Install dependencies 
+        run: | 
+          pip install --upgrade setuptools wheel 
+
+      - name: Generate release tag 
+        id: versioning 
+        run: | 
+          VERSION=$(date +'%Y.%m.%d') 
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV 
+
+      - name: Create GitHub release 
+        uses: softprops/action-gh-release@v1 
+        with: 
+          tag_name: ${{ env.RELEASE_VERSION }} 
           generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
